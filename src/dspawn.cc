@@ -17,6 +17,55 @@
 #include <iostream>
 #include <ev++.h>
 
+#include <unistd.h>
+#include <string.h>
+
 int main(int argc, const char *argv[]) {
+    bool background = false;
+    unsigned int debug = 0;
+    std::string service_dir;
+
+
+    argv++; argc--; // Skip over the first entry, the program name
+    do {
+        if (*argv == 0) {
+            break;
+        }
+
+        // If the first character in the string is not - we exit the loop
+        if (*argv[0] != '-') {
+            break;
+        }
+
+        if (!strcmp(*argv, "--")) {
+            argv++; argc--;
+            break;
+        }
+
+        if (!strncmp(*argv, "-d", 2)) {
+            // The debug option was used ... lets count how many times
+            const char *curpos = (*argv) + 1;
+
+            while (*curpos == 'd') {
+                debug++;
+                curpos++;
+            }
+            continue;
+        }
+
+        if (!strcmp(*argv, "-B")) {
+            background = true;
+            continue;
+        }
+        std::cerr << "Unknown option: " << *argv << std::endl;
+    } while (argv++, argc--);
+
+    if (argc == 0) {
+        std::cerr << "Missing directory where services are located ... exiting" << std::endl;
+        return 1;
+    }
+    else {
+        service_dir = std::string(*argv);
+    }
     return 0;
 }
