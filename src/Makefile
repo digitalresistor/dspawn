@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall -Wextra -Wno-unused-parameter -Werror -pipe
+CXXFLAGS=-Wall -Wextra -Wno-unused-parameter -Werror -pipe -g
 
 all: dspawn
 
