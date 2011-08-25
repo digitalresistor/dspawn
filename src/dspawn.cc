@@ -20,6 +20,10 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <sys/stat.h>
+
+#include <dirent.h>
+
 int main(int argc, const char *argv[]) {
     bool background = false;
     unsigned int debug = 0;
@@ -57,6 +61,7 @@ int main(int argc, const char *argv[]) {
             background = true;
             continue;
         }
+
         std::cerr << "Unknown option: " << *argv << std::endl;
     } while (argv++, argc--);
 
@@ -67,5 +72,23 @@ int main(int argc, const char *argv[]) {
     else {
         service_dir = std::string(*argv);
     }
+
+    if (background) {
+        // Fork and quit if we are the parent
+        if (fork() != 0) _exit(0);
+
+        // Become a session leader
+        setsid();
+
+        // if (fork() != 0) _exit(0); // Not required to double fork, need to find a good reason as to why we would want to
+    }
+    // Set our directory to the root
+    if (chdir(service_dir.c_str()) != 0) {
+        std::cerr << "Service directory does not exist" << std::endl;
+        return 1;
+    }
+
+    // Modify our umask
+    umask(0);
     return 0;
 }
