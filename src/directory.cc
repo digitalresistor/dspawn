@@ -17,28 +17,37 @@
 #include "directory.h"
 
 #include <stdlib.h>
+#include <errno.h>
 
 namespace dspawn
 {
     directory::directory(std::string dir) {
-        if (!verify_is_dir(dir)) {
-            throw;
-        }
-
-        _dir = opendir(dir.c_str());
+        if (!opendir(dir)) throw;
     }
 
     directory::directory(const char* dir) {
-        if (!verify_is_dir(std::string(dir))) {
-            throw;
-        }
-
-        _dir = opendir(dir);
+        if (!opendir(std::string(dir))) throw;
     }
 
     directory::directory() {}
 
-    directory::~directory() {
+    directory::~directory() {}
+
+    bool directory::opendir(std::string dir) {
+        char *full_path = new char[PATH_MAX + 1];
+
+        if (::realpath(dir.c_str(), full_path) == 0) {
+            throw; //TODO: get information from errno
+        }
+
+        _full_path = std::string(full_path);
+        delete[] full_path;
+
+        if (!_verify_is_dir(dir)) {
+            throw; //TODO: Throw an error
+        }
+
+        return true;
     }
 
     std::vector<std::string> directory::all_entries() {
@@ -53,12 +62,12 @@ namespace dspawn
         return iterator();
     }
 
-    bool directory::verify_is_dir(std::string dir) {
+    bool directory::_verify_is_dir(std::string dir) {
         // Verify that we are actually dealing with a directory
 
         struct stat *_st = new struct stat;
 
-        if (!stat(dir.c_str(), _st)) {
+        if (!::stat(dir.c_str(), _st)) {
             return false;
         }
 
@@ -74,9 +83,55 @@ namespace dspawn
     /* Directory iterator below */
 
     directory_iterator::directory_iterator() {
+        // This should never be instantiated. Ever.
+        throw;
+    }
+
+    directory_iterator::directory_iterator(std::string dir) : _dir_entry(0) {
+        _dir = ::opendir(dir.c_str());
+
+        if (_dir == 0) {
+            throw; //TODO: Error has occured
+        }
+
+        _read_next();
+    }
+
+    directory_iterator::directory_iterator(int end) : _dir(0), _entry(0), _dir_entry(0) {
     }
 
     directory_iterator::~directory_iterator() {
+        if (::closedir(_dir) != 0) throw; //TODO: Error has occured
     }
+
+    directory_entry& directory_iterator::operator*() {
+        return *_dir_entry;
+    }
+
+    const directory_iterator& directory_iterator::operator++() {
+        _read_next();
+        return *this;
+    }
+
+    bool directory_iterator::operator!=(const directory_iterator other) {
+        return (_entry != other._entry);
+    }
+
+    void directory_iterator::_read_next() {
+        errno = 0;
+
+        _entry = readdir(_dir);
+
+        if (_dir == 0 && errno != 0) {
+            throw; //TODO: Error has occured
+        }
+
+        if (_dir_entry != 0) {
+            delete _dir_entry;
+        }
+
+        _dir_entry = new directory_entry(_entry);
+    }
+
 } /* namespace dspawn */
 

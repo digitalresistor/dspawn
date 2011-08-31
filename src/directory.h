@@ -24,9 +24,10 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+#include "directory_entry.h"
+
 namespace dspawn
 {
-    class directory_entry;
     class directory_iterator;
     class directory;
 
@@ -48,8 +49,7 @@ namespace dspawn
             directory();
             ~directory();
 
-            bool opendir();
-            bool closedir();
+            bool opendir(std::string dir);
 
             std::vector<std::string> all_entries();
             
@@ -59,9 +59,9 @@ namespace dspawn
 
         private:
             /* data */
-            bool verify_is_dir(std::string dir);
+            bool _verify_is_dir(std::string dir);
 
-            DIR * _dir;
+            std::string _full_path;
     };
 
     /**
@@ -70,9 +70,10 @@ namespace dspawn
      */
     class directory_iterator : public std::iterator<std::forward_iterator_tag, directory_entry> 
     {
+        friend class directory;
+
         public:
-            directory_iterator();
-            virtual ~directory_iterator();
+            ~directory_iterator();
 
             directory_entry& operator*();
             const directory_iterator& operator++();
@@ -80,6 +81,15 @@ namespace dspawn
     
         private:
             /* data */
+            directory_iterator();
+            directory_iterator(std::string dir);
+            directory_iterator(int end);
+
+            void _read_next();
+
+            DIR* _dir;
+            struct dirent *_entry;
+            directory_entry *_dir_entry;
     };
     
 
