@@ -17,6 +17,9 @@
 #ifndef DIRECTORY_ENTRY_H_54BF50B3883F0A
 #define DIRECTORY_ENTRY_H_54BF50B3883F0A
 
+#include <sys/stat.h>
+#include <dirent.h>
+
 namespace dspawn
 {
     /**
@@ -27,6 +30,7 @@ namespace dspawn
     {
         public:
             directory_entry();
+            directory_entry(struct dirent*);
             virtual ~directory_entry();
     
         private:

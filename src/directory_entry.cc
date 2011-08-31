@@ -15,3 +15,12 @@
 **/
 
 #include "directory_entry.h"
+
+namespace dspawn
+{
+    directory_entry::directory_entry() {}
+    directory_entry::directory_entry(struct dirent*) {}
+
+    directory_entry::~directory_entry() {}
+} /* namespace dspawn */
+
