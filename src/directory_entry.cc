@@ -19,8 +19,33 @@
 namespace dspawn
 {
     directory_entry::directory_entry() {}
-    directory_entry::directory_entry(struct dirent*) {}
+
+    directory_entry::directory_entry(struct dirent *cd) {
+        _d_name = std::string(cd->d_name);
+        _d_fileno = cd->d_ino;
+
+    }
 
     directory_entry::~directory_entry() {}
+
+    bool directory_entry::operator==(const directory_entry& other) {
+        return (
+                (_d_fileno == other._d_fileno) &&
+                (_d_name == other._d_name)
+               );
+    }
+
+    bool directory_entry::operator!=(const directory_entry& other) {
+        return !(*this == other);
+    }
+
+    std::string directory_entry::name() {
+        return _d_name;
+    }
+
+    ino_t directory_entry::file_number() {
+        return _d_fileno;
+    }
+
 } /* namespace dspawn */
 

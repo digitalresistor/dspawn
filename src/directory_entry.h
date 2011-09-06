@@ -20,6 +20,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+#include <string>
+
 namespace dspawn
 {
     /**
@@ -31,9 +33,18 @@ namespace dspawn
         public:
             directory_entry();
             directory_entry(struct dirent*);
+            directory_entry(int i);
             virtual ~directory_entry();
+
+            std::string name();
+            ino_t file_number();
+
+            bool operator==(const directory_entry& other);
+            bool operator!=(const directory_entry& other);
     
         private:
+            ino_t _d_fileno;
+            std::string _d_name;
             /* data */
     };
     
