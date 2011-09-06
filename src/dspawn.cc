@@ -15,7 +15,6 @@
 **/
 
 #include <iostream>
-#include <ev++.h>
 
 #include <unistd.h>
 #include <string.h>

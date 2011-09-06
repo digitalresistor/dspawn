@@ -5,8 +5,10 @@ all: dspawn
 clean:
 	/bin/rm -rf dspawn dspawn.o directory.o directory_entry.o
 
-dspawn: dspawn.o directory.o directory_entry.o
-	${CXX} dspawn.o directory.o directory_entry.o -lev -o dspawn
+DSPAWN_OBJECTS = dspawn.o directory.o directory_entry.o
+
+dspawn: ${DSPAWN_OBJECTS}
+	$(CXX) ${DSPAWN_OBJECTS} -o $@
 
 dspawn.o: dspawn.cc
 
