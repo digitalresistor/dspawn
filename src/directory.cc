@@ -52,6 +52,37 @@ namespace dspawn
         return _verify_is_dir(dir);
     }
 
+    std::string directory::path() {
+        return _full_path;
+    }
+
+    std::string directory::basename() {
+        if (_full_path.length() > 1) {
+            std::string _temp;
+
+            _temp.append(_full_path, _full_path.find_last_of("/") + 1, _full_path.length());
+            return _temp;
+        }
+        else {
+            return _full_path;
+        }
+    }
+
+    std::string directory::dirname() {
+        if (_full_path.length() > 1) {
+            std::string _temp = _full_path;
+
+            _temp.erase(_temp.find_last_of("/"));
+            if (_temp.length() == 0) {
+                return std::string("/");
+            }
+            return _temp;
+        }
+        else {
+            return _full_path;
+        }
+    }
+
     std::vector<std::string> directory::all_entries() {
         return std::vector<std::string>();
     }

@@ -60,7 +60,11 @@ namespace dspawn
             ~directory();
 
             void opendir(std::string dir);
-            bool is_dir(std::string dir);
+            std::string path();
+            std::string basename();
+            std::string dirname();
+
+            static bool is_dir(std::string dir);
 
             std::vector<std::string> all_entries();
 
@@ -69,7 +73,7 @@ namespace dspawn
 
         private:
             /* data */
-            bool _verify_is_dir(std::string dir);
+            static bool _verify_is_dir(std::string dir);
 
             std::string _full_path;
     };
