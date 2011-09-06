@@ -57,11 +57,11 @@ namespace dspawn
     }
 
     directory::iterator directory::begin() {
-        return iterator();
+        return iterator(_full_path);
     }
 
     directory::iterator directory::end() {
-        return iterator();
+        return iterator(0);
     }
 
     bool directory::_verify_is_dir(std::string dir) {
@@ -115,10 +115,6 @@ namespace dspawn
         return *this;
     }
 
-    bool directory_iterator::operator!=(const directory_iterator other) {
-        return (_entry != other._entry);
-    }
-
     void directory_iterator::_read_next() {
         errno = 0;
 
@@ -132,7 +128,23 @@ namespace dspawn
             delete _dir_entry;
         }
 
+        // End of a directory.
+        if (_entry == 0) {
+            _dir_entry = 0;
+
+            return;
+        }
+
         _dir_entry = new directory_entry(_entry);
+
+        return;
+    }
+
+    bool directory_iterator::operator!=(const directory_iterator& other) {
+        if (_dir_entry == 0 && other._dir_entry == 0) return false;
+        if (other._dir_entry == 0 && _dir_entry != 0) return true;
+
+        return !(*_dir_entry == *(other._dir_entry));
     }
 
 } /* namespace dspawn */

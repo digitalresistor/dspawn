@@ -46,7 +46,7 @@ namespace dspawn
      * @brief Takes care of certain operations to do with directories
      *        such as reading them and providing a list of files in them.
      */
-    class directory 
+    class directory
     {
         friend class directory_iterator;
 
@@ -63,7 +63,6 @@ namespace dspawn
             bool is_dir(std::string dir);
 
             std::vector<std::string> all_entries();
-            
 
             iterator begin();
             iterator end();
@@ -79,7 +78,7 @@ namespace dspawn
      * @class directory_iterator
      * @brief An iterator that returns directory_entry's
      */
-    class directory_iterator : public std::iterator<std::forward_iterator_tag, directory_entry> 
+    class directory_iterator : public std::iterator<std::forward_iterator_tag, directory_entry>
     {
         friend class directory;
 
@@ -88,8 +87,8 @@ namespace dspawn
 
             directory_entry& operator*();
             const directory_iterator& operator++();
-            bool operator!=(const directory_iterator other);
-    
+            bool operator!=(const directory_iterator& other);
+
         private:
             /* data */
             directory_iterator();
@@ -102,8 +101,6 @@ namespace dspawn
             struct dirent *_entry;
             directory_entry *_dir_entry;
     };
-    
-
 } /* namespace dspawn */
 
 
