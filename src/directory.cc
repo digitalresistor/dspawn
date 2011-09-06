@@ -22,32 +22,34 @@
 namespace dspawn
 {
     directory::directory(std::string dir) {
-        if (!opendir(dir)) throw;
+        opendir(dir);
     }
 
     directory::directory(const char* dir) {
-        if (!opendir(std::string(dir))) throw;
+        opendir(std::string(dir));
     }
 
     directory::directory() {}
 
     directory::~directory() {}
 
-    bool directory::opendir(std::string dir) {
+    void directory::opendir(std::string dir) {
         char *full_path = new char[PATH_MAX + 1];
 
         if (::realpath(dir.c_str(), full_path) == 0) {
-            throw; //TODO: get information from errno
+            throw except::Errno(errno);
         }
 
         _full_path = std::string(full_path);
         delete[] full_path;
 
-        if (!_verify_is_dir(dir)) {
-            throw; //TODO: Throw an error
+        if (!_verify_is_dir(_full_path)) {
+            throw except::not_a_directory();
         }
+    }
 
-        return true;
+    bool directory::is_dir(std::string dir) {
+        return _verify_is_dir(dir);
     }
 
     std::vector<std::string> directory::all_entries() {
@@ -67,8 +69,8 @@ namespace dspawn
 
         struct stat *_st = new struct stat;
 
-        if (!::stat(dir.c_str(), _st)) {
-            return false;
+        if (::stat(dir.c_str(), _st) != 0) {
+            throw except::Errno(errno);
         }
 
         if (!(_st->st_mode & S_IFDIR)) {
@@ -90,9 +92,7 @@ namespace dspawn
     directory_iterator::directory_iterator(std::string dir) : _dir_entry(0) {
         _dir = ::opendir(dir.c_str());
 
-        if (_dir == 0) {
-            throw; //TODO: Error has occured
-        }
+        if (_dir == 0) throw except::Errno(errno);
 
         _read_next();
     }
@@ -101,7 +101,9 @@ namespace dspawn
     }
 
     directory_iterator::~directory_iterator() {
-        if (::closedir(_dir) != 0) throw; //TODO: Error has occured
+        if (_dir != 0) {
+            if (::closedir(_dir) != 0) throw except::Errno(errno);
+        }
     }
 
     directory_entry& directory_iterator::operator*() {
@@ -123,7 +125,7 @@ namespace dspawn
         _entry = readdir(_dir);
 
         if (_dir == 0 && errno != 0) {
-            throw; //TODO: Error has occured
+            throw except::Errno(errno);
         }
 
         if (_dir_entry != 0) {

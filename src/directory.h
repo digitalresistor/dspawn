@@ -25,11 +25,21 @@
 #include <dirent.h>
 
 #include "directory_entry.h"
+#include "except.h"
 
 namespace dspawn
 {
     class directory_iterator;
     class directory;
+
+    namespace except
+    {
+        class not_a_directory: public std::runtime_error {
+            public:
+                not_a_directory()
+                    : std::runtime_error("The path given is not a directory") { };
+        };
+    } /* namespace except */
 
     /**
      * @class directory
@@ -49,7 +59,8 @@ namespace dspawn
             directory();
             ~directory();
 
-            bool opendir(std::string dir);
+            void opendir(std::string dir);
+            bool is_dir(std::string dir);
 
             std::vector<std::string> all_entries();
             
