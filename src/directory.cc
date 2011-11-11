@@ -84,7 +84,12 @@ namespace dspawn
     }
 
     std::vector<std::string> directory::all_entries() {
-        return std::vector<std::string>();
+        std::vector<std::string> entries;
+
+        for (directory::iterator a = begin(), b = end(); a != b; ++a)
+            entries.push_back((*a).name());
+
+        return entries;
     }
 
     directory::iterator directory::begin() {
