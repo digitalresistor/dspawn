@@ -1,0 +1,14 @@
+files = [
+        'dspawn.cc',
+        'directory.cc',
+        'directory_entry.cc',
+       ]
+
+Import("env")
+
+# Look for includes in this directory
+env.MergeFlags("-I.")
+
+objects = env.Object(files)
+
+env.Program('dspawn', objects)

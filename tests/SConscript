@@ -1,0 +1,29 @@
+tests = [
+        'test_directory.cc',
+       ]
+
+objects = [
+        '#/src/directory.o',
+        '#/src/directory_entry.o',
+        ]
+
+gtest = [
+        'gtest/gtest-all.cc',
+        'gtest/gtest_main.cc',
+        ]
+
+Import("env")
+
+# New environment specifically for building gtest
+genv = env.Clone()
+genv.MergeFlags('-I.')
+gtest_lib = genv.StaticLibrary('gtest', gtest)
+
+# Clone of the environment so that we can add more include paths
+tenv = env.Clone()
+
+# Add some more include paths to find all the files
+tenv.MergeFlags('-I. -I../src -L. -lgtest')
+
+# We create a program named "testrunner" that runs all of our tests
+tenv.Program('testrunner', tests + objects)
