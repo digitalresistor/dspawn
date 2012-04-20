@@ -1,2 +1,6 @@
 src/dspawn
 tests/testrunner
+
+# Auto-generated file
+src/version.h
+
