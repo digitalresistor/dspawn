@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Bert JW Regeer;
+ * Copyright (c) 2011-2012 Bert JW Regeer;
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -29,9 +29,21 @@ namespace dspawn
         opendir(std::string(dir));
     }
 
+    directory::directory(const directory& other) {
+        opendir(other._full_path);
+    }
+
     directory::directory() {}
 
     directory::~directory() {}
+
+    directory& directory::operator =(const directory& other) {
+        if (this == &other) return *this;
+
+        _full_path = other._full_path;
+
+        return *this;
+    }
 
     void directory::opendir(std::string dir) {
         char *full_path = new char[PATH_MAX + 1];

@@ -56,8 +56,11 @@ namespace dspawn
 
             directory(std::string dir);
             directory(const char* dir);
+            directory(const directory& other);
             directory();
             ~directory();
+
+            directory& operator =(const directory& other);
 
             void opendir(std::string dir);
             std::string path();
