@@ -22,7 +22,13 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+#include <ev++.h>
+
 #include "version.h"
+void signal_int(ev::sig& signal, int) {
+    signal.loop.break_loop();
+}
+
 int main(int argc, const char *argv[]) {
     bool background = false;
     unsigned int debug = 0;
@@ -94,5 +100,13 @@ int main(int argc, const char *argv[]) {
 
     // Modify our umask
     umask(0);
+    ev::default_loop loop;
+
+    ev::sig sig_int;
+    sig_int.set<signal_int>();
+    sig_int.start(SIGINT);
+
+    loop.run(0);
+
     return 0;
 }
