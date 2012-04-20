@@ -11,8 +11,14 @@ if debug_build == '1':
 
 Export("env")
 
+# Add libev as a library
+env.MergeFlags('-lev -I/usr/local/include/')
+
 SConscript('src/SConscript')
 SConscript('tests/SConscript')
+
+env.Command('src/version.h', [], 'echo "char VERSION[] =" \\"`git describe --always --long --dirty || echo UNKNOWN`\\"";" > src/version.h')
+env.AlwaysBuild('src/version.h')
 
 env.Alias('dspawn', 'src/dspawn')
 Default('src/dspawn')

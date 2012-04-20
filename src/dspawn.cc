@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Bert JW Regeer;
+ * Copyright (c) 2011-2012 Bert JW Regeer;
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -20,9 +20,9 @@
 #include <string.h>
 
 #include <sys/stat.h>
-
 #include <dirent.h>
 
+#include "version.h"
 int main(int argc, const char *argv[]) {
     bool background = false;
     unsigned int debug = 0;
@@ -59,6 +59,11 @@ int main(int argc, const char *argv[]) {
         if (!strcmp(*argv, "-B")) {
             background = true;
             continue;
+        }
+
+        if (!strcmp(*argv, "--version")) {
+            std::cerr << "dspawn version: " << VERSION << std::endl;
+            return 0;
         }
 
         std::cerr << "Unknown option: " << *argv << std::endl;
