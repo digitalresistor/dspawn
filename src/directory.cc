@@ -118,7 +118,8 @@ namespace dspawn
         struct stat *_st = new struct stat;
 
         if (::stat(dir.c_str(), _st) != 0) {
-            throw except::Errno(errno);
+            errno = 0;
+            return false;
         }
 
         if (!(_st->st_mode & S_IFDIR)) {
