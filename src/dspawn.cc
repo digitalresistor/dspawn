@@ -17,14 +17,12 @@
 #include <iostream>
 
 #include <unistd.h>
-#include <string.h>
-
-#include <sys/stat.h>
-#include <dirent.h>
 
 #include <ev++.h>
 
 #include "version.h"
+#include "directory.h"
+
 void signal_int(ev::sig& signal, int) {
     signal.loop.break_loop();
 }
@@ -76,13 +74,24 @@ int main(int argc, const char *argv[]) {
     } while (argv++, argc--);
 
     if (argc == 0) {
-        std::cerr << "Missing directory where services are located ... exiting" << std::endl;
+        std::cerr << "Missing directory where services are located. Exiting." << std::endl;
         return 1;
     }
     else {
         service_dir = std::string(*argv);
     }
 
+    // Set our directory to the root
+    if (dspawn::directory::is_dir(service_dir)) {
+        ::chdir(service_dir.c_str());
+    } else {
+        std::cerr << "Service directory does not exist. Exiting." << std::endl;
+        return 1;
+    }
+    // Modify our umask
+    umask(0);
+
+    // If we are backgrounding, do it before we set up the services...
     if (background) {
         // Fork and quit if we are the parent
         if (fork() != 0) _exit(0);
@@ -92,14 +101,7 @@ int main(int argc, const char *argv[]) {
 
         // if (fork() != 0) _exit(0); // Not required to double fork, need to find a good reason as to why we would want to
     }
-    // Set our directory to the root
-    if (chdir(service_dir.c_str()) != 0) {
-        std::cerr << "Service directory does not exist" << std::endl;
-        return 1;
-    }
 
-    // Modify our umask
-    umask(0);
     ev::default_loop loop;
 
     ev::sig sig_int;
