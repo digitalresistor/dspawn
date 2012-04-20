@@ -95,6 +95,10 @@ namespace dspawn
         }
     }
 
+    std::string directory::name() {
+        return dirname();
+    }
+
     std::vector<std::string> directory::all_entries() {
         std::vector<std::string> entries;
 

@@ -66,6 +66,7 @@ namespace dspawn
             std::string path();
             std::string basename();
             std::string dirname();
+            std::string name();
 
             static bool is_dir(std::string dir);
 
