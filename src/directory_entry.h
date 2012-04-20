@@ -33,7 +33,6 @@ namespace dspawn
         public:
             directory_entry();
             directory_entry(struct dirent*);
-            directory_entry(int i);
             virtual ~directory_entry();
 
             std::string name();
